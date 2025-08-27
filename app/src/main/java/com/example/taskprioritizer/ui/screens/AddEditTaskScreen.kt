@@ -1,0 +1,131 @@
+package com.example.taskprioritizer.ui.screens
+
+import android.app.DatePickerDialog
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import com.example.taskprioritizer.domain.model.Task
+import java.util.*
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddEditTaskScreen(
+    onSave: (Task) -> Unit,
+    onCancel: () -> Unit
+) {
+    var title by remember { mutableStateOf("") }
+    var description by remember { mutableStateOf("") }
+    var priority by remember { mutableStateOf(2) } // media por defecto
+    var estimateMinutes by remember { mutableStateOf("30") }
+    var deadlineMillis by remember { mutableStateOf<Long?>(null) }
+
+    val context = LocalContext.current
+
+    Column(Modifier.fillMaxSize().padding(16.dp)) {
+        Text("Nueva tarea", style = MaterialTheme.typography.titleLarge)
+
+        Spacer(Modifier.height(16.dp))
+
+        OutlinedTextField(
+            value = title,
+            onValueChange = { title = it },
+            label = { Text("Título") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = description,
+            onValueChange = { description = it },
+            label = { Text("Descripción") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // Selector de prioridad
+        ExposedDropdownMenuBox(
+            expanded = false,
+            onExpandedChange = {}
+        ) {
+            OutlinedTextField(
+                value = when (priority) {
+                    1 -> "Baja"
+                    2 -> "Media"
+                    else -> "Alta"
+                },
+                onValueChange = {},
+                label = { Text("Prioridad") },
+                readOnly = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            DropdownMenu(
+                expanded = false,
+                onDismissRequest = {}
+            ) {}
+        }
+
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(onClick = { priority = 1 }) { Text("Baja") }
+            Button(onClick = { priority = 2 }) { Text("Media") }
+            Button(onClick = { priority = 3 }) { Text("Alta") }
+        }
+
+        Spacer(Modifier.height(8.dp))
+
+        OutlinedTextField(
+            value = estimateMinutes,
+            onValueChange = { estimateMinutes = it },
+            label = { Text("Duración (min)") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(Modifier.height(8.dp))
+
+        // Selector de fecha límite
+        val calendar = Calendar.getInstance()
+        val datePicker = DatePickerDialog(
+            context,
+            { _, year, month, day ->
+                val cal = Calendar.getInstance()
+                cal.set(year, month, day, 23, 59)
+                deadlineMillis = cal.timeInMillis
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+
+        Button(onClick = { datePicker.show() }) {
+            Text(deadlineMillis?.let {
+                "Fecha límite: ${Date(it)}"
+            } ?: "Seleccionar fecha límite")
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // Botones de acción
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            OutlinedButton(onClick = onCancel) { Text("Cancelar") }
+            Button(
+                onClick = {
+                    if (title.isNotBlank()) {
+                        onSave(
+                            Task(
+                                title = title,
+                                description = description.takeIf { it.isNotBlank() },
+                                priority = priority,
+                                estimateMinutes = estimateMinutes.toIntOrNull() ?: 30,
+                                deadlineMillis = deadlineMillis
+                            )
+                        )
+                    }
+                }
+            ) { Text("Guardar") }
+        }
+    }
+}

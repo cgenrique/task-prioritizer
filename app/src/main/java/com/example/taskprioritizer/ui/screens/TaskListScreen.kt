@@ -10,16 +10,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.taskprioritizer.domain.model.Task
 import com.example.taskprioritizer.domain.scoring.TaskScorer
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
     tasks: List<Task>,
-    onAddSamples: () -> Unit
+    onAddClick: () -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddSamples) {
+            FloatingActionButton(onClick = onAddClick) {
                 Text("+")
             }
         }
@@ -37,7 +38,7 @@ fun TaskListScreen(
             ) {
                 items(tasks, key = { it.id }) { task ->
                     TaskRow(task)
-                    Divider()
+                    HorizontalDivider()
                 }
             }
         }
@@ -50,9 +51,10 @@ private fun TaskRow(task: Task) {
     Column(Modifier.fillMaxWidth().padding(8.dp)) {
         Text(task.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(4.dp))
+        val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
         Text(
             "Prioridad: ${task.priority} · Estimación: ${task.estimateMinutes} min" +
-                    (task.deadlineMillis?.let { " · Deadline: ${java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(it)}" } ?: "")
+                    (task.deadlineMillis?.let { " · Deadline: ${dateFormat.format(it)}" } ?: "")
         )
         Spacer(Modifier.height(2.dp))
         Text("Score: ${"%.3f".format(score)}")

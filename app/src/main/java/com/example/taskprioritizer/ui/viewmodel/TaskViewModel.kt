@@ -21,12 +21,19 @@ class TaskViewModel(
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     // Temporal: meter 3 tareas de prueba para ver cómo ordena
+    @Suppress("unused")
     fun addDummyData() {
         viewModelScope.launch {
             val now = System.currentTimeMillis()
             repo.add(Task(title = "Entrega práctica", priority = 3, deadlineMillis = now + 24*60*60*1000, estimateMinutes = 120))
             repo.add(Task(title = "Sacar la basura", priority = 1, estimateMinutes = 5))
             repo.add(Task(title = "Proyecto largo", priority = 2, deadlineMillis = now + 10*24*60*60*1000, estimateMinutes = 300))
+        }
+    }
+
+    fun addTask(task: Task) {
+        viewModelScope.launch {
+            repo.add(task)
         }
     }
 }
