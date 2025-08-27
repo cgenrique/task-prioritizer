@@ -36,4 +36,28 @@ class TaskViewModel(
             repo.add(task)
         }
     }
+
+    fun updateTask(task: Task) {
+        viewModelScope.launch {
+            repo.update(task)
+        }
+    }
+
+    fun deleteTask(task: Task) {
+        viewModelScope.launch {
+            repo.delete(task)
+        }
+    }
+
+    fun setCompleted(id: Int, completed: Boolean) {
+        viewModelScope.launch {
+            repo.setCompleted(id, completed)
+
+            // Borrar si lleva +7 días completada
+            val sevenDays = 7 * 24 * 60 * 60 * 1000L
+            val now = System.currentTimeMillis()
+            tasks.value.filter { it.completed && now - it.createdAtMillis > sevenDays }
+                .forEach { repo.delete(it) }
+        }
+    }
 }

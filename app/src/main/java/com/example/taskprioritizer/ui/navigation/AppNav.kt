@@ -1,5 +1,6 @@
 package com.example.taskprioritizer.ui.navigation
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -29,17 +30,42 @@ fun AppNav(modifier: Modifier = Modifier) {
             val tasks by vm.tasks.collectAsStateWithLifecycle()
             TaskListScreen(
                 tasks = tasks,
-                onAddClick = { navController.navigate("add") }
+                onAddClick = { navController.navigate("add") },
+                onEdit = { task ->
+                    navController.navigate("edit/${task.id}")
+                },
+                onDelete = { task -> vm.deleteTask(task) },
+                onToggleCompleted = { task -> vm.setCompleted(task.id, !task.completed) }
             )
         }
         composable("add") {
             AddEditTaskScreen(
+                task = null,
                 onSave = {
                     vm.addTask(it)
                     navController.popBackStack()
                 },
                 onCancel = { navController.popBackStack() }
             )
+        }
+
+        composable("edit/{id}") { backStackEntry ->
+            val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+            val tasks by vm.tasks.collectAsStateWithLifecycle()
+            val taskToEdit = tasks.find { it.id == id }
+
+            if (taskToEdit == null) {
+                Text("Tarea no encontrada")
+            } else {
+                AddEditTaskScreen(
+                    task = taskToEdit,
+                    onSave = {
+                        vm.updateTask(it.copy(id = id!!))
+                        navController.popBackStack()
+                    },
+                    onCancel = { navController.popBackStack() }
+                )
+            }
         }
     }
 }

@@ -13,19 +13,21 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskScreen(
+    task: Task? = null,
     onSave: (Task) -> Unit,
     onCancel: () -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var priority by remember { mutableStateOf(2) } // media por defecto
-    var estimateMinutes by remember { mutableStateOf("30") }
-    var deadlineMillis by remember { mutableStateOf<Long?>(null) }
+    var title by remember(task) { mutableStateOf(task?.title ?: "") }
+    var description by remember(task) { mutableStateOf(task?.description ?: "") }
+    var priority by remember(task) { mutableStateOf(task?.priority ?: 2) } // 1..3
+    var estimateMinutes by remember(task) { mutableStateOf((task?.estimateMinutes ?: 30).toString()) }
+    var deadlineMillis by remember(task) { mutableStateOf<Long?>(task?.deadlineMillis) }
 
     val context = LocalContext.current
 
     Column(Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Nueva tarea", style = MaterialTheme.typography.titleLarge)
+        Text(if (task == null) "Nueva tarea" else "Editar tarea",
+            style = MaterialTheme.typography.titleLarge)
 
         Spacer(Modifier.height(16.dp))
 
@@ -47,27 +49,14 @@ fun AddEditTaskScreen(
 
         Spacer(Modifier.height(8.dp))
 
-        // Selector de prioridad
-        ExposedDropdownMenuBox(
-            expanded = false,
-            onExpandedChange = {}
-        ) {
-            OutlinedTextField(
-                value = when (priority) {
-                    1 -> "Baja"
-                    2 -> "Media"
-                    else -> "Alta"
-                },
-                onValueChange = {},
-                label = { Text("Prioridad") },
-                readOnly = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-            DropdownMenu(
-                expanded = false,
-                onDismissRequest = {}
-            ) {}
-        }
+        // Muestra de prioridad seleccionada (los botones de debajo cambian el valor)
+        OutlinedTextField(
+            value = when (priority) { 1 -> "Baja"; 2 -> "Media"; else -> "Alta" },
+            onValueChange = {},
+            label = { Text("Prioridad") },
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(onClick = { priority = 1 }) { Text("Baja") }
@@ -108,6 +97,15 @@ fun AddEditTaskScreen(
 
         Spacer(Modifier.height(16.dp))
 
+        // Botón de acción (nuevo)
+        if (deadlineMillis != null) {
+            OutlinedButton(onClick = { deadlineMillis = null }) {
+                Text("Quitar fecha")
+            }
+
+            Spacer(Modifier.height(16.dp))
+        }
+
         // Botones de acción
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             OutlinedButton(onClick = onCancel) { Text("Cancelar") }
@@ -116,16 +114,19 @@ fun AddEditTaskScreen(
                     if (title.isNotBlank()) {
                         onSave(
                             Task(
+                                id = task?.id ?: 0, // si edito, conservo id
                                 title = title,
                                 description = description.takeIf { it.isNotBlank() },
                                 priority = priority,
                                 estimateMinutes = estimateMinutes.toIntOrNull() ?: 30,
-                                deadlineMillis = deadlineMillis
+                                deadlineMillis = deadlineMillis,
+                                createdAtMillis = task?.createdAtMillis ?: System.currentTimeMillis(),
+                                completed = task?.completed ?: false
                             )
                         )
                     }
                 }
-            ) { Text("Guardar") }
+            ) { Text(if (task == null) "Guardar" else "Actualizar") }
         }
     }
 }
