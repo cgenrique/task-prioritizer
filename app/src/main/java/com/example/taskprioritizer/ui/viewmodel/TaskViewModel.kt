@@ -15,13 +15,19 @@ class TaskViewModel(
     getPrioritizedTasks: GetPrioritizedTasks
 ) : ViewModel() {
 
-    // Lista ya ordenada por score (flujo que observa la BD)
-    val tasks: StateFlow<List<Task>> =
-        getPrioritizedTasks()
+    val pendingTasks: StateFlow<List<Task>> =
+        getPrioritizedTasks() // ya usaba observePending()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    val completedTasks: StateFlow<List<Task>> =
+        repo.observeCompleted()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
+    val allTasks: StateFlow<List<Task>> =
+        repo.observeAll()
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
     // Temporal: meter 3 tareas de prueba para ver cómo ordena
-    @Suppress("unused")
+    /*@Suppress("unused")
     fun addDummyData() {
         viewModelScope.launch {
             val now = System.currentTimeMillis()
@@ -29,7 +35,7 @@ class TaskViewModel(
             repo.add(Task(title = "Sacar la basura", priority = 1, estimateMinutes = 5))
             repo.add(Task(title = "Proyecto largo", priority = 2, deadlineMillis = now + 10*24*60*60*1000, estimateMinutes = 300))
         }
-    }
+    }*/
 
     fun addTask(task: Task) {
         viewModelScope.launch {
@@ -53,11 +59,12 @@ class TaskViewModel(
         viewModelScope.launch {
             repo.setCompleted(id, completed)
 
-            // Borrar si lleva +7 días completada
-            val sevenDays = 7 * 24 * 60 * 60 * 1000L
-            val now = System.currentTimeMillis()
-            tasks.value.filter { it.completed && now - it.createdAtMillis > sevenDays }
-                .forEach { repo.delete(it) }
+            if (completed) {
+                val sevenDays = 7 * 24 * 60 * 60 * 1000L
+                val now = System.currentTimeMillis()
+                pendingTasks.value.filter { it.completed && now - it.createdAtMillis > sevenDays }
+                    .forEach { repo.delete(it) }
+            }
         }
     }
 }

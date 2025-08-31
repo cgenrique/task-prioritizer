@@ -27,9 +27,13 @@ fun AppNav(modifier: Modifier = Modifier) {
 
     NavHost(navController, startDestination = "list", modifier = modifier) {
         composable("list") {
-            val tasks by vm.tasks.collectAsStateWithLifecycle()
+            val pending by vm.pendingTasks.collectAsStateWithLifecycle()
+            val completed by vm.completedTasks.collectAsStateWithLifecycle()
+            val all by vm.allTasks.collectAsStateWithLifecycle()
             TaskListScreen(
-                tasks = tasks,
+                allTasks  = all,
+                pendingTasks = pending,
+                completedTasks = completed,
                 onAddClick = { navController.navigate("add") },
                 onEdit = { task ->
                     navController.navigate("edit/${task.id}")
@@ -51,7 +55,7 @@ fun AppNav(modifier: Modifier = Modifier) {
 
         composable("edit/{id}") { backStackEntry ->
             val id = backStackEntry.arguments?.getString("id")?.toIntOrNull()
-            val tasks by vm.tasks.collectAsStateWithLifecycle()
+            val tasks by vm.pendingTasks.collectAsStateWithLifecycle()
             val taskToEdit = tasks.find { it.id == id }
 
             if (taskToEdit == null) {

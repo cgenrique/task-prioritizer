@@ -11,6 +11,9 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE completed = 0 ORDER BY createdAtMillis DESC")
     fun observePending(): Flow<List<TaskEntity>>
 
+    @Query("SELECT * FROM tasks WHERE completed = 1 ORDER BY createdAtMillis DESC")
+    fun observeCompleted(): Flow<List<TaskEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(task: TaskEntity): Long
 

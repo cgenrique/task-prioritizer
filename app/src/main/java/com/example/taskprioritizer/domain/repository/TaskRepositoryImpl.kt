@@ -18,6 +18,9 @@ class TaskRepositoryImpl(
     override fun observePending(): Flow<List<Task>> =
         dao.observePending().map { list -> list.map { it.toDomain() } }
 
+    override fun observeCompleted(): Flow<List<Task>> =
+        dao.observeCompleted().map { list -> list.map { it.toDomain() } }
+
     override suspend fun add(task: Task): Int =
         dao.insert(task.toEntity()).toInt()
 
