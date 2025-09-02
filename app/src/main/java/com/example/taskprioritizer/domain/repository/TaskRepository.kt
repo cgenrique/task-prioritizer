@@ -12,5 +12,5 @@ interface TaskRepository {
     suspend fun add(task: Task): Int
     suspend fun update(task: Task)
     suspend fun delete(task: Task)
-    suspend fun setCompleted(id: Int, completed: Boolean)
+    suspend fun setCompleted(id: Int, completed: Boolean, completedAtMillis: Long?)
 }

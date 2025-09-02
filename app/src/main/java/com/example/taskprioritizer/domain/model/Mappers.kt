@@ -4,10 +4,10 @@ import com.example.taskprioritizer.data.local.TaskEntity
 
 fun TaskEntity.toDomain() = Task(
     id, title, description, category, deadlineMillis,
-    estimateMinutes, priority, createdAtMillis, completed
+    estimateMinutes, priority, createdAtMillis, completed, completedAtMillis
 )
 
 fun Task.toEntity() = com.example.taskprioritizer.data.local.TaskEntity(
     id, title, description, category, deadlineMillis,
-    estimateMinutes, priority, createdAtMillis, completed
+    estimateMinutes, priority, createdAtMillis, completed, completedAtMillis
 )

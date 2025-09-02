@@ -57,14 +57,17 @@ class TaskViewModel(
 
     fun setCompleted(id: Int, completed: Boolean) {
         viewModelScope.launch {
-            repo.setCompleted(id, completed)
+            val now = System.currentTimeMillis()
+            val completedAt = if (completed) now else null
 
-            if (completed) {
-                val sevenDays = 7 * 24 * 60 * 60 * 1000L
-                val now = System.currentTimeMillis()
-                pendingTasks.value.filter { it.completed && now - it.createdAtMillis > sevenDays }
-                    .forEach { repo.delete(it) }
+            repo.setCompleted(id, completed, completedAt)
+
+            // 🔴 Borrar tareas completadas hace más de 7 días
+            val sevenDays = 7 * 24 * 60 * 60 * 1000L
+            val oldCompleted = completedTasks.value.filter {
+                it.completed && it.completedAtMillis != null && now - it.completedAtMillis > sevenDays
             }
+            oldCompleted.forEach { repo.delete(it) }
         }
     }
 }

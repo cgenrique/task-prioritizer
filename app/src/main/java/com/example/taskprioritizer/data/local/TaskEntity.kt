@@ -13,5 +13,6 @@ data class TaskEntity (
     val estimateMinutes: Int = 30,
     val priority: Int = 2,                // 1=baja, 2=media, 3=alta
     val createdAtMillis: Long = System.currentTimeMillis(),
-    val completed: Boolean = false
+    val completed: Boolean = false,
+    val completedAtMillis: Long? = null
 )

@@ -32,7 +32,7 @@ class TaskRepositoryImpl(
         dao.delete(task.toEntity())
     }
 
-    override suspend fun setCompleted(id: Int, completed: Boolean) {
-        dao.setCompleted(id, completed)
+    override suspend fun setCompleted(id: Int, completed: Boolean, completedAtMillis: Long?) {
+        dao.setCompleted(id, completed, completedAtMillis)
     }
 }

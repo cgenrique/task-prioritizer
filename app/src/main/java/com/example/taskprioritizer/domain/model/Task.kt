@@ -9,5 +9,7 @@ data class Task(
     val estimateMinutes: Int = 30,
     val priority: Int = 2,
     val createdAtMillis: Long = System.currentTimeMillis(),
-    val completed: Boolean = false
+    val completed: Boolean = false,
+    val completedAtMillis: Long? = null
+
 )
