@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.example.taskprioritizer.domain.model.Task
 import com.example.taskprioritizer.domain.scoring.TaskScorer
 import java.util.Locale
+import androidx.compose.material.icons.filled.BarChart
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,7 +32,8 @@ fun TaskListScreen(
     onAddClick: () -> Unit,
     onEdit: (Task) -> Unit,
     onDelete: (Task) -> Unit,
-    onToggleCompleted: (Task) -> Unit
+    onToggleCompleted: (Task) -> Unit,
+    onStatsClick: () -> Unit
 ) {
 
     var filter by remember { mutableStateOf("Pendientes") }
@@ -55,6 +58,13 @@ fun TaskListScreen(
             TopAppBar(
                 title = { Text("Tareas") },
                 actions = {
+
+                    // Menú de estadísticas
+                    IconButton(onClick = onStatsClick) {
+                        Icon(Icons.Filled.BarChart, contentDescription = "Estadísticas")
+                    }
+
+                    // Menú de filtros
                     Box {
                         TextButton(onClick = { expanded = true }) {
                             Text("Filtro: $filter")

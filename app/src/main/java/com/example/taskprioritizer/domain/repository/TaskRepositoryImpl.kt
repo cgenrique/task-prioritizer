@@ -35,4 +35,6 @@ class TaskRepositoryImpl(
     override suspend fun setCompleted(id: Int, completed: Boolean, completedAtMillis: Long?) {
         dao.setCompleted(id, completed, completedAtMillis)
     }
+
+    override fun completedPerDay() = dao.completedPerDay()
 }

@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.taskprioritizer.App
 import com.example.taskprioritizer.ui.screens.AddEditTaskScreen
+import com.example.taskprioritizer.ui.screens.StatsScreen
 import com.example.taskprioritizer.ui.screens.TaskListScreen
 import com.example.taskprioritizer.ui.viewmodel.TaskViewModel
 import com.example.taskprioritizer.ui.viewmodel.TaskViewModelFactory
@@ -39,7 +40,8 @@ fun AppNav(modifier: Modifier = Modifier) {
                     navController.navigate("edit/${task.id}")
                 },
                 onDelete = { task -> vm.deleteTask(task) },
-                onToggleCompleted = { task -> vm.setCompleted(task.id, !task.completed) }
+                onToggleCompleted = { task -> vm.setCompleted(task.id, !task.completed) },
+                onStatsClick = { navController.navigate("stats") }
             )
         }
         composable("add") {
@@ -70,6 +72,16 @@ fun AppNav(modifier: Modifier = Modifier) {
                     onCancel = { navController.popBackStack() }
                 )
             }
+        }
+
+        composable("stats") {
+            val pending by vm.pendingTasks.collectAsStateWithLifecycle()
+            val completed by vm.completedStats.collectAsStateWithLifecycle()
+            StatsScreen(
+                pendingTasks = pending,
+                completed = completed,
+                onBack = { navController.popBackStack() }
+            )
         }
     }
 }
