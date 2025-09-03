@@ -41,6 +41,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.foundation)
     val room = "2.6.1"
 
     implementation("androidx.room:room-runtime:$room")

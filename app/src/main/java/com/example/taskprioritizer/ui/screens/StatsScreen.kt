@@ -12,6 +12,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.TopAppBar
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -87,6 +88,49 @@ fun UrgencyPieChart(tasks: List<Task>) {
     Text("Total de tareas: ${total.toInt()}")
 }
 
+@Composable
+fun CompletedTasksBarChart(completed: List<CompletedPerDay>) {
+    val maxCount = (completed.maxOfOrNull { it.count } ?: 1).toFloat()
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        completed.forEach { entry ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Bottom,
+                modifier = Modifier.weight(1f)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .height((150.dp * (entry.count / maxCount)))
+                        .width(24.dp)
+                        .background(Color(0xFF2196F3)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        "${entry.count}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(Modifier.height(4.dp))
+
+                // Fecha debajo
+                Text(
+                    entry.day,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        }
+    }
+}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,7 +151,7 @@ fun StatsScreen(
             )
         }
     ) { inner ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(inner)
@@ -115,25 +159,24 @@ fun StatsScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            item {
+                Text("Tareas pendientes por urgencia", style = MaterialTheme.typography.titleMedium)
 
-            Text("Tareas pendientes por urgencia", style = MaterialTheme.typography.titleMedium)
+                if (pendingTasks.isNotEmpty()) {
+                    UrgencyPieChart(pendingTasks)
+                } else {
+                    Text("No hay tareas pendientes")
+                }
 
-            if (pendingTasks.isNotEmpty()) {
-                UrgencyPieChart(pendingTasks)
-            } else {
-                Text("No hay tareas pendientes")
-            }
+                HorizontalDivider()
+                Spacer(Modifier.height(16.dp))
 
-            HorizontalDivider()
 
-            Text("Tareas completadas por día", style = MaterialTheme.typography.titleMedium)
-            completed.forEach {
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(it.day)
-                    Text("${it.count}")
+                Text("Tareas completadas por día", style = MaterialTheme.typography.titleMedium)
+                if (completed.isNotEmpty()) {
+                    CompletedTasksBarChart(completed)
+                } else {
+                    Text("No hay tareas completadas")
                 }
             }
         }
