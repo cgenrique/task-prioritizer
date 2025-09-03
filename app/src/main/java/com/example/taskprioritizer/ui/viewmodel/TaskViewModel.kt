@@ -14,41 +14,61 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.map
 
 
+/**
+ * ViewModel principal que gestiona el estado de la lista de tareas.
+ *
+ * Funciones principales:
+ * - Exponer listas de tareas (todas, pendientes, completadas).
+ * - Añadir, actualizar y eliminar tareas.
+ * - Marcar tareas como completadas.
+ * - Eliminar automáticamente tareas completadas hace más de 7 días.
+ * - Proveer estadísticas de tareas completadas por día.
+ */
 class TaskViewModel(
     private val repo: TaskRepository,
     getPrioritizedTasks: GetPrioritizedTasks
 ) : ViewModel() {
 
+    // Lista de tareas pendientes, priorizadas según el score.
     val pendingTasks: StateFlow<List<Task>> =
         getPrioritizedTasks() // ya usaba observePending()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    // Lista de tareas completadas.
     val completedTasks: StateFlow<List<Task>> =
         repo.observeCompleted()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    // Lista de todas las tareas (pendientes + completadas).
     val allTasks: StateFlow<List<Task>> =
         repo.observeAll()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
+    // Añadir una nueva tarea.
     fun addTask(task: Task) {
         viewModelScope.launch {
             repo.add(task)
         }
     }
 
+    // Añadir una nueva tarea.
     fun updateTask(task: Task) {
         viewModelScope.launch {
             repo.update(task)
         }
     }
 
+     // Eliminar una tarea existente.
     fun deleteTask(task: Task) {
         viewModelScope.launch {
             repo.delete(task)
         }
     }
 
+    /**
+     * Marcar una tarea como completada o desmarcarla.
+     * Si está completada desde hace más de 7 días, se elimina automáticamente.
+     */
     fun setCompleted(id: Int, completed: Boolean) {
         viewModelScope.launch {
             val now = System.currentTimeMillis()
@@ -65,6 +85,7 @@ class TaskViewModel(
         }
     }
 
+    // Estadísticas de tareas completadas agrupadas por día.
     val completedStats: StateFlow<List<CompletedPerDay>> =
         repo.completedPerDay()
             .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())

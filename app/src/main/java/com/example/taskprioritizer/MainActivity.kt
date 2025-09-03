@@ -11,7 +11,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.taskprioritizer.ui.theme.TaskPrioritizerTheme
 import com.example.taskprioritizer.ui.navigation.AppNav
 
-
+/**
+ * Actividad principal de la aplicación.
+ *
+ * Configura la UI con Jetpack Compose y define [AppNav] como punto de entrada
+ * para la navegación entre pantallas.
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +29,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Composable de ejemplo generado por defecto en proyectos Compose.
+ * No se utiliza en la lógica principal de la aplicación.
+ */
 @Composable
 fun Greeting(name: String, modifier: Modifier = Modifier) {
     Text(
