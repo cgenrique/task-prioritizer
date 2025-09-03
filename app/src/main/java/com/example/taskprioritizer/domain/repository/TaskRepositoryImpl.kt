@@ -8,6 +8,12 @@ import com.example.taskprioritizer.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * Implementación de [TaskRepository] que utiliza Room como fuente de datos.
+ *
+ * Recibe un [TaskDao] y adapta las entidades de base de datos [TaskEntity]
+ * al modelo de dominio [Task].
+ */
 class TaskRepositoryImpl(
     private val dao: TaskDao
 ) : TaskRepository {

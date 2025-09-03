@@ -1,5 +1,11 @@
 package com.example.taskprioritizer.domain.model
 
+/**
+ * Modelo de dominio que representa una tarea en la aplicación.
+ *
+ * A diferencia de [TaskEntity], este modelo se utiliza dentro de la lógica
+ * de la app (UI, casos de uso, repositorios), sin depender de Room.
+ */
 data class Task(
     val id: Int = 0,
     val title: String,
