@@ -10,6 +10,19 @@ import androidx.compose.ui.unit.dp
 import com.example.taskprioritizer.domain.model.Task
 import java.util.*
 
+/**
+ * Pantalla de alta y edición de tareas.
+ *
+ * Si recibe una [task], se inicializa en modo edición.
+ * Si no, se muestra como formulario para añadir una nueva tarea.
+ *
+ * Permite configurar:
+ * - Título
+ * - Descripción
+ * - Prioridad (baja, media, alta)
+ * - Duración estimada en minutos
+ * - Fecha y hora límite
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskScreen(

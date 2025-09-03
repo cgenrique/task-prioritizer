@@ -19,6 +19,13 @@ import androidx.compose.ui.graphics.Color
 import com.example.taskprioritizer.domain.model.Task
 import com.example.taskprioritizer.domain.scoring.TaskScorer
 
+/**
+ * Pantalla de estadísticas de la aplicación.
+ *
+ * Muestra:
+ * - Gráfico circular de tareas pendientes clasificadas por urgencia.
+ * - Gráfico de barras con tareas completadas agrupadas por día.
+ */
 @Composable
 fun UrgencyPieChart(tasks: List<Task>) {
     // Contar las tareas por urgencia
@@ -88,6 +95,9 @@ fun UrgencyPieChart(tasks: List<Task>) {
     Text("Total de tareas: ${total.toInt()}")
 }
 
+/**
+ * Gráfico de barras que muestra tareas completadas por día.
+ */
 @Composable
 fun CompletedTasksBarChart(completed: List<CompletedPerDay>) {
     val maxCount = (completed.maxOfOrNull { it.count } ?: 1).toFloat()

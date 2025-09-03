@@ -18,11 +18,22 @@ import com.example.taskprioritizer.ui.screens.TaskListScreen
 import com.example.taskprioritizer.ui.viewmodel.TaskViewModel
 import com.example.taskprioritizer.ui.viewmodel.TaskViewModelFactory
 
+/**
+ * Configuración de la navegación principal de la aplicación.
+ *
+ * Define las pantallas disponibles en la app:
+ * - Lista de tareas
+ * - Añadir tarea
+ * - Editar tarea
+ * - Estadísticas
+ *
+ * Se gestiona con [NavHost] y un [NavController].
+ */
 @Composable
 fun AppNav(modifier: Modifier = Modifier) {
     val navController: NavHostController = rememberNavController()
 
-    // 👇 cogemos la Application desde el contexto, sin singletons
+    // Acceso al ViewModel compartido
     val app = LocalContext.current.applicationContext as App
     val vm: TaskViewModel = viewModel(factory = TaskViewModelFactory(app))
 

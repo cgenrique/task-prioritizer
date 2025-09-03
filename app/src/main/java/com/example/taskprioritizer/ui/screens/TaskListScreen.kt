@@ -23,6 +23,16 @@ import java.util.Locale
 import androidx.compose.material.icons.filled.BarChart
 
 
+/**
+ * Pantalla principal de la aplicación: lista de tareas.
+ *
+ * Permite:
+ * - Ver tareas pendientes, completadas o urgentes mediante filtros.
+ * - Añadir nuevas tareas.
+ * - Editar o eliminar tareas existentes.
+ * - Marcar tareas como completadas.
+ * - Acceder a las estadísticas.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskListScreen(
@@ -44,7 +54,7 @@ fun TaskListScreen(
         isLoading = false
     }
 
-
+    // Selección de tareas en función del filtro
     val filteredTasks = when (filter) {
         "Pendientes" -> pendingTasks
         "Completadas" -> completedTasks
@@ -95,13 +105,13 @@ fun TaskListScreen(
     ) { inner ->
         when {
             isLoading -> {
-                // ⏳ solo al principio cuando aún no hay datos
+                // Solo al principio cuando aún no hay datos
                 Box(Modifier.fillMaxSize().padding(inner), contentAlignment = Alignment.Center) {
                     CircularProgressIndicator()
                 }
             }
 
-            // 📭 Caso: no hay tareas para este filtro
+            // Caso: no hay tareas para este filtro
             filteredTasks.isEmpty() -> {
                 Box(
                     Modifier.fillMaxSize().padding(inner),
@@ -111,7 +121,7 @@ fun TaskListScreen(
                 }
             }
 
-            // ✅ Caso normal: mostrar lista filtrada
+            // Caso normal: mostrar lista filtrada
             else -> {
                 LazyColumn(
                     modifier = Modifier
@@ -134,6 +144,17 @@ fun TaskListScreen(
     }
 }
 
+/**
+ * Fila de la lista de tareas.
+ *
+ * Muestra:
+ * - Título
+ * - Descripción (si existe)
+ * - Prioridad, duración y deadline
+ * - Estado de urgencia
+ * - Checkbox para completar
+ * - Botón para eliminar
+ */
 @Composable
 private fun TaskRow(
     task: Task,
