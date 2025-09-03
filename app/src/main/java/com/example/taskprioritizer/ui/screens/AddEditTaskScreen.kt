@@ -81,8 +81,23 @@ fun AddEditTaskScreen(
             context,
             { _, year, month, day ->
                 val cal = Calendar.getInstance()
-                cal.set(year, month, day, 23, 59)
-                deadlineMillis = cal.timeInMillis
+                cal.set(year, month, day)
+
+                // Cuando seleccionas fecha, abrimos también el selector de hora
+                val timePicker = android.app.TimePickerDialog(
+                    context,
+                    { _, hour, minute ->
+                        cal.set(Calendar.HOUR_OF_DAY, hour)
+                        cal.set(Calendar.MINUTE, minute)
+                        cal.set(Calendar.SECOND, 0)
+                        cal.set(Calendar.MILLISECOND, 0)
+                        deadlineMillis = cal.timeInMillis
+                    },
+                    calendar.get(Calendar.HOUR_OF_DAY),
+                    calendar.get(Calendar.MINUTE),
+                    true // formato 24h
+                )
+                timePicker.show()
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
